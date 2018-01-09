@@ -3,7 +3,6 @@ import cgi
 import os
 import jinja2
 
-#Need to link Jinja template to signup instead of the form, then get the error messages to display properly
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), autoescape=True)
 
@@ -21,47 +20,6 @@ def hello():
     template = jinja_env.get_template('hello_greeting.html')
     return template.render(name=first_name)
 
-
-form = """
-    <style>
-        .error {{ color: red; }}
-    </style>
-    <h1>Signup</h1>
-    <form method='POST'>
-
-        <label>Username 
-            <input name="username" type="text" value='{username}' />
-        </label>
-        <span class="error">{username_error}</span><br>
-
-        <label>Password
-            <input name="password" type="password" value='{password}' />
-        </label>
-        <span class="error">{password_error}</span><br>
-
-        <label>Verify Password
-            <input name="verify" type="password" value='{verify}' />
-        </label>
-        <span class="error">{verify_error}</span><br>
-
-        <label>Email (optional)
-            <input name="email" type="text" value='{email}' />
-        </label>
-        <span class="error">{email_error}</span><br>
-
-
-        <input type="submit" value="Signup!" />
-    </form>
-    """
-
-@app.route('/signup')
-def display_form():
-    return form.format(username='', username_error='',
-        password='', password_error='', verify='', verify_error='',
-        email='', email_error='')
-
-#Need to make certain charactwer validation is functioning properly, by setting the accepted characters
-#May need to make separate checks for separate boxes
 def is_valid(data):
     #valid_characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
     valid_data = str(data)
@@ -70,8 +28,8 @@ def is_valid(data):
     else:
         return False
 
-#Need to fix email validation!!!  
-#Need to request the information from the email box and then check it for @ and . and add that to tally, then check tally     
+
+  
 def valid_email(email):
     ats = -1
     dots = -1
@@ -99,10 +57,7 @@ def is_valid_email(data):
             space_list.append(letter)
     else:
         return True
-    #if valid_data in valid_characters:
-        #return True
-    #else:
-        #return False
+   
 
 
 
@@ -119,11 +74,6 @@ def validate_data():
     password_error = ''
     verify_error = ''
     email_error = ''
-
-    #str(username)
-    #str(password)
-    #str(verify)
-    #str(email)
 
 #Username Errors
     if len(username) <= -1:
@@ -239,7 +189,8 @@ def validate_data():
         user = str(username)
         return redirect('/hellouser?user={0}'.format(user))
     else:
-        return form.format(username_error=username_error,
+        template = jinja_env.get_template('hello_form.html')
+        return template.render(username_error=username_error,
             password_error=password_error, verify_error= verify_error,
             email_error=email_error,
             username=username,
